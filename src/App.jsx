@@ -1774,13 +1774,13 @@ function App() {
 
   useEffect(() => {
     if (currentScreen === 'workout' && selectedProgram !== null) {
-      try { sessionStorage.setItem('activeWorkout', JSON.stringify({ setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime })); } catch (e) {}
+      try { localStorage.setItem('activeWorkout', JSON.stringify({ setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime })); } catch (e) {}
     }
   }, [setLogs, completedSets, doneExercises, currentScreen]);
 
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem('activeWorkout');
+      const saved = localStorage.getItem('activeWorkout');
       if (saved) {
         const data = JSON.parse(saved);
         if (data.selectedProgram !== null && programs[data.selectedProgram] && data.workoutStartTime) {
@@ -2692,8 +2692,8 @@ const getProgramLastSession = (programName) => {
           return ex;
         }),
       };
-    }));
-    sessionStorage.removeItem('activeWorkout'); try { localStorage.removeItem('restStart'); localStorage.removeItem('restDuration'); } catch (e) {}
+    }));    localStorage.removeItem('activeWorkout');
+ try { localStorage.removeItem('restStart'); localStorage.removeItem('restDuration'); } catch (e) {}
     setShowFinishWorkoutModal(false); setCurrentScreen('summary');
     // Auto sync to Supabase if connected
     if (syncUserId) {
@@ -3084,7 +3084,7 @@ const getProgramLastSession = (programName) => {
         };
       }));
     }
-    sessionStorage.removeItem('activeWorkout');
+    localStorage.removeItem('activeWorkout');
     setSelectedProgram(null);
     setCurrentScreen('home');
     setWorkoutStartTime(null);
