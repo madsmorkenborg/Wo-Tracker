@@ -1,0 +1,10 @@
+{
+  "name": "Workout Tracker",
+  "short_name": "Workout",
+  "description": "Personal workout tracker with programs, PRs and volume tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait"
+}
