@@ -2692,8 +2692,8 @@ const getProgramLastSession = (programName) => {
           return ex;
         }),
       };
-    }));    localStorage.removeItem('activeWorkout');
- try { localStorage.removeItem('restStart'); localStorage.removeItem('restDuration'); } catch (e) {}
+    }));
+    localStorage.removeItem('activeWorkout'); try { localStorage.removeItem('restStart'); localStorage.removeItem('restDuration'); } catch (e) {}
     setShowFinishWorkoutModal(false); setCurrentScreen('summary');
     // Auto sync to Supabase if connected
     if (syncUserId) {
