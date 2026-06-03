@@ -3295,7 +3295,7 @@ const getProgramLastSession = (programName) => {
       const exId = String(exercise.id); const isSource = exId === String(groupingSourceId); const isSelected = groupingSelectedIds.includes(exId);
       if (exercise.groupId && usedGroups.includes(exercise.groupId)) return;
       if (exercise.groupId) {
-        usedGroups.push(exercise.groupId); const groupExercises = sortedVisible.filter(e => e.groupId === exercise.groupId); const isCollapsed = collapsedGroups[exercise.groupId] !== false; const firstEx = groupExercises[0];
+        usedGroups.push(exercise.groupId); const groupExercises = exercises.filter(e => e.groupId === exercise.groupId); const isCollapsed = collapsedGroups[exercise.groupId] !== false; const firstEx = groupExercises[0];
         rendered.push(
           <div key={exercise.groupId} className="group-card">
             <div className="group-collapse-header" onClick={() => !isGroupingMode && toggleGroupCollapsed(exercise.groupId)}>
