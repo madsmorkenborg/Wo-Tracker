@@ -1523,6 +1523,7 @@ function App() {
     try { return localStorage.getItem('lastSyncDate') || null; } catch (e) { return null; }
   });
   const [showSyncSetupModal, setShowSyncSetupModal] = useState(false);
+  const [syncModalMode, setSyncModalMode] = useState('create'); // create | restore
   const [showSyncRestoreModal, setShowSyncRestoreModal] = useState(false);
   const [syncRestoreData, setSyncRestoreData] = useState(null);
   const [syncPinInput, setSyncPinInput] = useState('');
@@ -4129,69 +4130,57 @@ const getProgramLastSession = (programName) => {
             </div>
           </div>
         )}
-        {showSyncSetupModal && (
-          <div className="modal-overlay" style={{ zIndex: 500 }}>
-            <div className="modal">
-              <div className="delete-modal-icon">🔐</div>
-              <h2>{syncSetupStep === 'create' ? 'Create Sync PIN' : 'Confirm PIN'}</h2>
-              {syncSetupStep === 'create' ? (
-                <>
-                  <p className="delete-modal-subtext">Choose a PIN to identify your data across devices. Write it down — you will need it to restore on a new device.</p>
-                  <input
-                    className="input"
-                    type="password"
-                    placeholder="Enter a PIN (min 4 characters)"
-                    value={syncPinInput}
-                    onChange={e => { setSyncPinInput(e.target.value); setSyncPinError(''); }}
-                    onKeyDown={e => e.key === 'Enter' && handleCreateSyncPin()}
-                    autoFocus
-                  />
-                </>
-              ) : (
-                <>
-                  <p className="delete-modal-subtext">Enter your PIN again to confirm.</p>
-                  <input
-                    className="input"
-                    type="password"
-                    placeholder="Confirm your PIN"
-                    value={syncPinConfirm}
-                    onChange={e => { setSyncPinConfirm(e.target.value); setSyncPinError(''); }}
-                    onKeyDown={e => e.key === 'Enter' && handleCreateSyncPin()}
-                    autoFocus
-                  />
-                </>
-              )}
-              {syncPinError && <p style={{ color: 'var(--accent-red)', fontSize: '0.82rem', textAlign: 'center' }}>{syncPinError}</p>}
-              <div className="modal-buttons">
-                <button className="start-btn" onClick={handleCreateSyncPin}>
-                  {syncSetupStep === 'create' ? 'Next →' : '✅ Create & Sync'}
-                </button>
-                {syncSetupStep === 'confirm' && (
-                  <button className="cancel-btn" onClick={() => { setSyncSetupStep('create'); setSyncPinConfirm(''); setSyncPinError(''); }}>← Back</button>
+      {showSyncSetupModal && (
+        <div className="modal-overlay" style={{ zIndex: 500 }}>
+          <div className="modal">
+            <div className="delete-modal-icon">{syncModalMode === 'restore' ? '🔄' : '🔐'}</div>
+
+            {/* ── RESTORE MODE ── */}
+            {syncModalMode === 'restore' && (
+              <>
+                <h2>Restore with PIN</h2>
+                <p className="delete-modal-subtext">Enter the PIN you used when you first set up sync on your other device.</p>
+                <input
+                  className="input"
+                  type="password"
+                  placeholder="Enter your PIN"
+                  value={syncPinInput}
+                  onChange={e => { setSyncPinInput(e.target.value); setSyncPinError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && handleRestoreWithPin(syncPinInput)}
+                  autoFocus
+                />
+                {syncPinError && <p style={{ color: 'var(--accent-red)', fontSize: '0.82rem', textAlign: 'center' }}>{syncPinError}</p>}
+                <div className="modal-buttons">
+                  <button className="start-btn" onClick={() => handleRestoreWithPin(syncPinInput)} disabled={syncPinInput.trim().length < 4}>
+                    🔄 Restore My Data
+                  </button>
+                  <button className="cancel-btn" onClick={() => { setShowSyncSetupModal(false); setSyncPinInput(''); setSyncPinError(''); }}>Cancel</button>
+                </div>
+              </>
+            )}
+
+            {/* ── CREATE MODE ── */}
+            {syncModalMode === 'create' && (
+              <>
+                <h2>{syncSetupStep === 'create' ? 'Create Sync PIN' : 'Confirm PIN'}</h2>
+                {syncSetupStep === 'create' ? (
+                  <><p className="delete-modal-subtext">Choose a PIN to sync across devices. Write it down — you need it to restore.</p>
+                  <input className="input" type="password" placeholder="Enter a PIN (min 4 characters)" value={syncPinInput} onChange={e => { setSyncPinInput(e.target.value); setSyncPinError(''); }} onKeyDown={e => e.key === 'Enter' && handleCreateSyncPin()} autoFocus /></>
+                ) : (
+                  <><p className="delete-modal-subtext">Enter your PIN again to confirm.</p>
+                  <input className="input" type="password" placeholder="Confirm your PIN" value={syncPinConfirm} onChange={e => { setSyncPinConfirm(e.target.value); setSyncPinError(''); }} onKeyDown={e => e.key === 'Enter' && handleCreateSyncPin()} autoFocus /></>
                 )}
-                <button className="cancel-btn" onClick={() => { setShowSyncSetupModal(false); setSyncPinInput(''); setSyncPinConfirm(''); setSyncSetupStep('create'); setSyncPinError(''); }}>Cancel</button>
-              </div>
-              {syncSetupStep === 'create' && (
-                <>
-                  <div className="sync-divider"><span>— already have a PIN? —</span></div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input
-                      className="input"
-                      type="password"
-                      placeholder="Enter existing PIN to restore"
-                      value={syncPinConfirm}
-                      onChange={e => { setSyncPinConfirm(e.target.value); setSyncPinError(''); }}
-                      onKeyDown={e => { if (e.key === 'Enter') { setSyncPinInput(syncPinConfirm); handleRestoreWithPin(); } }}
-                    />
-                    <button className="cancel-btn" style={{ whiteSpace: 'nowrap', padding: '12px' }} onClick={() => { setSyncPinInput(syncPinConfirm); setTimeout(() => handleRestoreWithPin(), 0); }}>
-                      🔄 Restore
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                {syncPinError && <p style={{ color: 'var(--accent-red)', fontSize: '0.82rem', textAlign: 'center' }}>{syncPinError}</p>}
+                <div className="modal-buttons">
+                  <button className="start-btn" onClick={handleCreateSyncPin}>{syncSetupStep === 'create' ? 'Next →' : '✅ Create & Sync'}</button>
+                  {syncSetupStep === 'confirm' && <button className="cancel-btn" onClick={() => { setSyncSetupStep('create'); setSyncPinConfirm(''); setSyncPinError(''); }}>← Back</button>}
+                  <button className="cancel-btn" onClick={() => { setShowSyncSetupModal(false); setSyncPinInput(''); setSyncPinConfirm(''); setSyncSetupStep('create'); setSyncPinError(''); }}>Cancel</button>
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
+      )}
 
         {showSyncRestoreModal && syncRestoreData && (
           <div className="modal-overlay" style={{ zIndex: 500 }}>
@@ -5118,7 +5107,7 @@ const getProgramLastSession = (programName) => {
                         <p className="settings-row-sub">Auto backup after every workout. Works on all devices including iOS home screen.</p>
                       </div>
                     </div>
-                    <button className="settings-clear-btn settings-export-btn" onClick={() => { setSyncSetupStep('create'); setSyncPinInput(''); setSyncPinError(''); setShowSyncSetupModal(true); }}>Set Up</button>
+                    <button className="settings-clear-btn settings-export-btn" onClick={() => { setSyncModalMode('create'); setSyncSetupStep('create'); setSyncPinInput(''); setSyncPinError(''); setShowSyncSetupModal(true); }}>Set Up</button>
                   </div>
                   <div className="settings-row-divider" />
                   <div className="settings-row">
@@ -5129,7 +5118,7 @@ const getProgramLastSession = (programName) => {
                         <p className="settings-row-sub">Already have a PIN from another device</p>
                       </div>
                     </div>
-                    <button className="settings-clear-btn settings-export-btn" onClick={() => { setSyncSetupStep('restore'); setSyncPinInput(''); setSyncPinError(''); setShowSyncSetupModal(true); }}>Restore</button>
+                    <button className="settings-clear-btn settings-export-btn" onClick={() => { setSyncModalMode('restore'); setSyncSetupStep('create'); setSyncPinInput(''); setSyncPinError(''); setShowSyncSetupModal(true); }}>Restore</button>
                   </div>
                 </>
               ) : (
