@@ -3439,7 +3439,7 @@ const getProgramLastSession = (programName) => {
     sortedVisible.forEach((exercise) => {
       if (exercise.groupId && usedGroups.includes(exercise.groupId)) return;
       if (exercise.groupId) {
-        usedGroups.push(exercise.groupId); const groupExercises = visibleExercises.filter(e => e.groupId === exercise.groupId); const isCollapsed = collapsedGroups[exercise.groupId] !== false; const firstEx = groupExercises[0]; const allDone = groupExercises.every(ex => doneExercises.includes(String(ex.id)));
+        usedGroups.push(exercise.groupId); const groupExercises = sortedVisible.filter(e => e.groupId === exercise.groupId); const isCollapsed = collapsedGroups[exercise.groupId] !== false; const firstEx = groupExercises[0]; const allDone = groupExercises.every(ex => doneExercises.includes(String(ex.id)));
         rendered.push(
           <div key={exercise.groupId} className={`group-card ${allDone ? 'group-card-done' : ''}`} style={{ marginBottom: '10px' }}>
             <div className={`group-collapse-header ${allDone ? 'group-collapse-header-done' : ''}`} onClick={() => toggleGroupCollapsed(exercise.groupId)}>
