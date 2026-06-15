@@ -1401,13 +1401,6 @@ function App() {
   useEffect(() => { try { localStorage.setItem('darkMode', String(darkMode)); } catch (e) {} document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, [darkMode]);
   useEffect(() => { document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, []);
 
-  
-
-  useEffect(() => {
-    const h = () => { if (document.visibilityState === 'visible' && workoutStartTime) setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)); };
-    document.addEventListener('visibilitychange', h); return () => document.removeEventListener('visibilitychange', h);
-  }, [workoutStartTime]);
-
   const [showOnboarding, setShowOnboarding] = useState(() => { try { return !localStorage.getItem('hasCompletedOnboarding'); } catch (e) { return false; } });
   const [onboardingStep, setOnboardingStep] = useState(0);
   useEffect(() => { if (showOnboarding && onboardingStep === 1) setTemplateTab('plans'); }, [showOnboarding, onboardingStep]);
@@ -1441,7 +1434,6 @@ function App() {
   const [workoutCatalogueTab, setWorkoutCatalogueTab] = useState('exercises');
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-
   const [completedSets, setCompletedSets] = useState({});
   const [doneExercises, setDoneExercises] = useState([]);
   const [setLogs, setSetLogs] = useState({});
@@ -1505,7 +1497,6 @@ function App() {
   const [completionOrder, setCompletionOrder] = useState([]);
   const [expandedVolumeGroups, setExpandedVolumeGroups] = useState({});
   const [summaryData, setSummaryData] = useState(null);
-  const [showWorkoutRecoveryBanner, setShowWorkoutRecoveryBanner] = useState(false);
   const [volumeTrendMuscle, setVolumeTrendMuscle] = useState('Chest');
   const [showRepeatWorkoutModal, setShowRepeatWorkoutModal] = useState(false);
   const [workoutToRepeat, setWorkoutToRepeat] = useState(null);
@@ -1736,6 +1727,11 @@ function App() {
   }, [workoutStartTime]);
 
   useEffect(() => {
+    const h = () => { if (document.visibilityState === 'visible' && workoutStartTime) setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)); };
+    document.addEventListener('visibilitychange', h); return () => document.removeEventListener('visibilitychange', h);
+  }, [workoutStartTime]);
+
+  useEffect(() => {
     if (!isResting || restStartTime === null) return;
     restTimerRef.current = setInterval(() => {
       const elapsed = Math.floor((Date.now() - restStartTime) / 1000); const remaining = restDuration - elapsed;
@@ -1790,9 +1786,7 @@ function App() {
         const data = JSON.parse(saved);
         if (data.selectedProgram !== null && programs[data.selectedProgram] && data.workoutStartTime) {
           setSetLogs(data.setLogs || {}); setCompletedSets(data.completedSets || {}); setDoneExercises(data.doneExercises || []);
-          setSelectedProgram(data.selectedProgram); setWorkoutStartTime(data.workoutStartTime);
-          setShowWorkoutRecoveryBanner(true);
-          setCurrentScreen('workout');
+          setSelectedProgram(data.selectedProgram); setWorkoutStartTime(data.workoutStartTime); setCurrentScreen('workout');
         }
       }
     } catch (e) {}
@@ -5236,27 +5230,6 @@ const getProgramLastSession = (programName) => {
       {/* ══ WORKOUT ══ */}
       {currentScreen === 'workout' && selectedProgram !== null && (
         <div>
-          {showWorkoutRecoveryBanner && (
-            <div style={{
-              background: 'rgba(201,168,76,0.15)',
-              border: '1px solid rgba(201,168,76,0.4)',
-              borderRadius: '8px',
-              padding: '10px 14px',
-              margin: '8px 0',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div>
-                <p style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--accent-gold)' }}>💪 Workout Restored</p>
-                <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Your previous workout was recovered</p>
-              </div>
-              <button
-                onClick={() => setShowWorkoutRecoveryBanner(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1rem', padding: '4px' }}
-              >✕</button>
-            </div>
-          )}
           <div className="workout-header">
             <button className="workout-cancel-btn-visible" onClick={() => { if (Object.keys(setLogs).length > 0) setShowCancelWorkoutModal(true); else goHome(); }}>✕ Cancel</button>
             <div className="workout-title-block"><h1 className="workout-title">{(programs[selectedProgram]?.type || 'strength') === 'mobility' ? '🧘 ' : ''}{programs[selectedProgram].name}</h1></div>
