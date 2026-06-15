@@ -1401,17 +1401,7 @@ function App() {
   useEffect(() => { try { localStorage.setItem('darkMode', String(darkMode)); } catch (e) {} document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, [darkMode]);
   useEffect(() => { document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, []);
 
-  // ── Keep Supabase alive — ping on app open ──
-  useEffect(() => {
-    try {
-      fetch(`https://kkwcaftgaompuhdkgacg.supabase.co/rest/v1/backups?select=id&limit=1`, {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtrd2NhZnRnYW9tcHVoZGtnYWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDE1MDEsImV4cCI6MjA5NTYxNzUwMX0.5GqFBbpw4uiv_rHawQvxngkfvexKwrXbmgrlWJR-83k',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtrd2NhZnRnYW9tcHVoZGtnYWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDE1MDEsImV4cCI6MjA5NTYxNzUwMX0.5GqFBbpw4uiv_rHawQvxngkfvexKwrXbmgrlWJR-83k`,
-        },
-      }).catch(() => {});
-    } catch (e) {}
-  }, []);
+  
 
   useEffect(() => {
     const h = () => { if (document.visibilityState === 'visible' && workoutStartTime) setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)); };
