@@ -1413,20 +1413,10 @@ function App() {
     } catch (e) {}
   }, []);
 
-  // ── Visibility change save ──
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && workoutStartTime && selectedProgram !== null) {
-        try {
-          localStorage.setItem('activeWorkout', JSON.stringify({
-            setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime
-          }));
-        } catch (e) {}
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [workoutStartTime, selectedProgram, setLogs, completedSets, doneExercises, elapsedTime]);
+    const h = () => { if (document.visibilityState === 'visible' && workoutStartTime) setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)); };
+    document.addEventListener('visibilitychange', h); return () => document.removeEventListener('visibilitychange', h);
+  }, [workoutStartTime]);
 
   const [showOnboarding, setShowOnboarding] = useState(() => { try { return !localStorage.getItem('hasCompletedOnboarding'); } catch (e) { return false; } });
   const [onboardingStep, setOnboardingStep] = useState(0);
