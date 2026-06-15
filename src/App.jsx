@@ -1451,6 +1451,21 @@ function App() {
   const [workoutCatalogueTab, setWorkoutCatalogueTab] = useState('exercises');
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  // ── Visibility change save ──
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && workoutStartTime && selectedProgram !== null) {
+        try {
+          localStorage.setItem('activeWorkout', JSON.stringify({
+            setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime
+          }));
+        } catch (e) {}
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [workoutStartTime, selectedProgram, setLogs, completedSets, doneExercises, elapsedTime]);
   const [completedSets, setCompletedSets] = useState({});
   const [doneExercises, setDoneExercises] = useState([]);
   const [setLogs, setSetLogs] = useState({});
@@ -1742,11 +1757,6 @@ function App() {
   useEffect(() => {
     if (workoutStartTime) { timerRef.current = setInterval(() => setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)), 1000); }
     return () => clearInterval(timerRef.current);
-  }, [workoutStartTime]);
-
-  useEffect(() => {
-    const h = () => { if (document.visibilityState === 'visible' && workoutStartTime) setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000)); };
-    document.addEventListener('visibilitychange', h); return () => document.removeEventListener('visibilitychange', h);
   }, [workoutStartTime]);
 
   useEffect(() => {
