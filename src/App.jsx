@@ -1796,6 +1796,18 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── SUPABASE KEEP-ALIVE PING ──
+useEffect(() => {
+  const pingSupabase = async () => {
+    try {
+      await supabaseRequest('/backups?select=id&limit=1');
+    } catch (e) {
+      // Silently ignore — this is just a keep-alive ping
+    }
+  };
+  pingSupabase();
+}, []); // Empty dependency array = runs once on mount
+
   const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
   const hashPin = async (pin) => {
