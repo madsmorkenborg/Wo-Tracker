@@ -1452,20 +1452,6 @@ function App() {
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // ── Visibility change save ──
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && workoutStartTime && selectedProgram !== null) {
-        try {
-          localStorage.setItem('activeWorkout', JSON.stringify({
-            setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime
-          }));
-        } catch (e) {}
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [workoutStartTime, selectedProgram, setLogs, completedSets, doneExercises, elapsedTime]);
   const [completedSets, setCompletedSets] = useState({});
   const [doneExercises, setDoneExercises] = useState([]);
   const [setLogs, setSetLogs] = useState({});
