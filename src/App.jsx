@@ -1401,6 +1401,33 @@ function App() {
   useEffect(() => { try { localStorage.setItem('darkMode', String(darkMode)); } catch (e) {} document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, [darkMode]);
   useEffect(() => { document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light'); }, []);
 
+  // ── Keep Supabase alive — ping on app open ──
+  useEffect(() => {
+    try {
+      fetch(`https://kkwcaftgaompuhdkgacg.supabase.co/rest/v1/backups?select=id&limit=1`, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtrd2NhZnRnYW9tcHVoZGtnYWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDE1MDEsImV4cCI6MjA5NTYxNzUwMX0.5GqFBbpw4uiv_rHawQvxngkfvexKwrXbmgrlWJR-83k',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtrd2NhZnRnYW9tcHVoZGtnYWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDE1MDEsImV4cCI6MjA5NTYxNzUwMX0.5GqFBbpw4uiv_rHawQvxngkfvexKwrXbmgrlWJR-83k`,
+        },
+      }).catch(() => {});
+    } catch (e) {}
+  }, []);
+
+  // ── Visibility change save ──
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && workoutStartTime && selectedProgram !== null) {
+        try {
+          localStorage.setItem('activeWorkout', JSON.stringify({
+            setLogs, completedSets, doneExercises, elapsedTime, selectedProgram, workoutStartTime
+          }));
+        } catch (e) {}
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [workoutStartTime, selectedProgram, setLogs, completedSets, doneExercises, elapsedTime]);
+
   const [showOnboarding, setShowOnboarding] = useState(() => { try { return !localStorage.getItem('hasCompletedOnboarding'); } catch (e) { return false; } });
   const [onboardingStep, setOnboardingStep] = useState(0);
   useEffect(() => { if (showOnboarding && onboardingStep === 1) setTemplateTab('plans'); }, [showOnboarding, onboardingStep]);
@@ -1497,6 +1524,7 @@ function App() {
   const [completionOrder, setCompletionOrder] = useState([]);
   const [expandedVolumeGroups, setExpandedVolumeGroups] = useState({});
   const [summaryData, setSummaryData] = useState(null);
+  const [showWorkoutRecoveryBanner, setShowWorkoutRecoveryBanner] = useState(false);
   const [volumeTrendMuscle, setVolumeTrendMuscle] = useState('Chest');
   const [showRepeatWorkoutModal, setShowRepeatWorkoutModal] = useState(false);
   const [workoutToRepeat, setWorkoutToRepeat] = useState(null);
@@ -1786,7 +1814,9 @@ function App() {
         const data = JSON.parse(saved);
         if (data.selectedProgram !== null && programs[data.selectedProgram] && data.workoutStartTime) {
           setSetLogs(data.setLogs || {}); setCompletedSets(data.completedSets || {}); setDoneExercises(data.doneExercises || []);
-          setSelectedProgram(data.selectedProgram); setWorkoutStartTime(data.workoutStartTime); setCurrentScreen('workout');
+          setSelectedProgram(data.selectedProgram); setWorkoutStartTime(data.workoutStartTime);
+          setShowWorkoutRecoveryBanner(true);
+          setCurrentScreen('workout');
         }
       }
     } catch (e) {}
@@ -5230,6 +5260,27 @@ const getProgramLastSession = (programName) => {
       {/* ══ WORKOUT ══ */}
       {currentScreen === 'workout' && selectedProgram !== null && (
         <div>
+          {showWorkoutRecoveryBanner && (
+            <div style={{
+              background: 'rgba(201,168,76,0.15)',
+              border: '1px solid rgba(201,168,76,0.4)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              margin: '8px 0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <p style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--accent-gold)' }}>💪 Workout Restored</p>
+                <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Your previous workout was recovered</p>
+              </div>
+              <button
+                onClick={() => setShowWorkoutRecoveryBanner(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1rem', padding: '4px' }}
+              >✕</button>
+            </div>
+          )}
           <div className="workout-header">
             <button className="workout-cancel-btn-visible" onClick={() => { if (Object.keys(setLogs).length > 0) setShowCancelWorkoutModal(true); else goHome(); }}>✕ Cancel</button>
             <div className="workout-title-block"><h1 className="workout-title">{(programs[selectedProgram]?.type || 'strength') === 'mobility' ? '🧘 ' : ''}{programs[selectedProgram].name}</h1></div>
