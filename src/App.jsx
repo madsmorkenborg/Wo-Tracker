@@ -1820,6 +1820,7 @@ useEffect(() => {
 
   const syncToSupabase = async (userId) => {
     if (!userId) return;
+    if (syncStatus === 'syncing') return;
     setSyncStatus('syncing');
     try {
       const data = {
