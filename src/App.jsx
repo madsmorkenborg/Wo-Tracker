@@ -1110,19 +1110,19 @@ function MuscleHeatmap({ program, customExercises, customDetailedMuscles }) {
   });
 
   const MUSCLE_TO_SVG = {
-    'Chest (Overall)': ['chest'],
-    'Front Delts':     ['front-delts'],
-    'Side Delts':      ['side-delts'],
-    'Biceps':          ['biceps'],
+    'Chest (Overall)': ['chest-l', 'chest-r'],
+    'Front Delts':     ['fdelt-l', 'fdelt-r'],
+    'Side Delts':      ['sdelt-l', 'sdelt-r'],
+    'Biceps':          ['bicep-l', 'bicep-r'],
     'Abs':             ['abs'],
-    'Quads':           ['quads'],
-    'Calves':          ['calves-front', 'calves-back'],
-    'Lats':            ['lats'],
-    'Upper Back':      ['upper-back'],
-    'Rear Delts':      ['rear-delts'],
-    'Triceps':         ['triceps'],
-    'Glutes':          ['glutes'],
-    'Hamstrings':      ['hamstrings'],
+    'Quads':           ['quad-l', 'quad-r'],
+    'Calves':          ['calf-fl', 'calf-fr', 'calf-bl', 'calf-br'],
+    'Lats':            ['lat-l', 'lat-r'],
+    'Upper Back':      ['upperback'],
+    'Rear Delts':      ['rdelt-l', 'rdelt-r'],
+    'Triceps':         ['tri-l', 'tri-r'],
+    'Glutes':          ['glute-l', 'glute-r'],
+    'Hamstrings':      ['ham-l', 'ham-r'],
   };
 
   const activeSvgIds = new Set();
@@ -1131,48 +1131,164 @@ function MuscleHeatmap({ program, customExercises, customDetailedMuscles }) {
     if (ids) ids.forEach(id => activeSvgIds.add(id));
   });
 
-  const muscleStyle = (id) => ({
-    fill: activeSvgIds.has(id) ? '#e94560' : '#444444',
-    stroke: '#2b2b2b',
-    strokeWidth: 2,
-    strokeLinejoin: 'round',
-    strokeLinecap: 'round',
-    transition: 'fill 0.3s ease',
-  });
+  const c = (id) => activeSvgIds.has(id) ? '#e94560' : '#3a3a3a';
+  const bodyFill = '#252525';
+  const bodyStroke = '#444';
+  const muscleSW = 0.5;
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 900 760"
-      style={{ width: '180px', height: '152px', flexShrink: 0, background: 'transparent' }}
+      viewBox="0 0 220 300"
+      style={{ width: '150px', height: '205px', flexShrink: 0, background: 'transparent' }}
     >
-      <defs>
-        <style>{`.body-fill{fill:#1f1f1f}`}</style>
-      </defs>
+      {/* ═══════════════════════════════
+          FRONT FIGURE  (left side)
+          Centre x = 55
+      ═══════════════════════════════ */}
+      <g transform="translate(55 0)">
 
-      {/* ── FRONT VIEW ── */}
-      <g transform="translate(90 28)">
-        <path className="body-fill" d="M210 18c-27 0-49 22-49 49s22 49 49 49 49-22 49-49-22-49-49-49zM151 128c-34 10-59 38-70 86L55 334c-5 24 10 48 34 53 23 5 45-9 52-31l18-63 4 83-33 231c-5 35 18 67 53 72 29 4 57-14 65-43l35-159h19l35 159c8 29 36 47 65 43 35-5 58-37 53-72l-33-231 4-83 18 63c7 22 29 36 52 31 24-5 39-29 34-53l-26-120c-11-48-36-76-70-86-31-9-68-12-109-12H260c-41 0-78 3-109 12z"/>
-        <path style={muscleStyle('chest')} d="M142 159c24-14 52-22 85-18 9 25 7 51-8 78-26 8-54 1-80-18-6-17-5-31 3-42zM278 141c33-4 61 4 85 18 8 11 9 25 3 42-26 19-54 26-80 18-15-27-17-53-8-78z"/>
-        <path style={muscleStyle('front-delts')} d="M101 179c12-23 30-38 55-47 13 2 23 8 30 18-20 15-34 36-44 63-18-3-32-15-41-34zM319 150c7-10 17-16 30-18 25 9 43 24 55 47-9 19-23 31-41 34-10-27-24-48-44-63z"/>
-        <path style={muscleStyle('side-delts')} d="M84 217c3-24 10-44 22-60 23 18 35 39 36 64-4 17-15 30-31 38-19-8-28-22-27-42zM414 157c12 16 19 36 22 60 1 20-8 34-27 42-16-8-27-21-31-38 1-25 13-46 36-64z"/>
-        <path style={muscleStyle('biceps')} d="M84 255c20 4 35 18 45 43l-17 65c-6 16-18 26-35 27-12-11-16-27-12-46l19-89zM436 255l19 89c4 19 0 35-12 46-17-1-29-11-35-27l-17-65c10-25 25-39 45-43z"/>
-        <path style={muscleStyle('abs')} d="M179 225c19 8 40 12 64 12h34c24 0 45-4 64-12 15 49 15 103 1 161-20 14-47 22-82 22s-62-8-82-22c-14-58-14-112 1-161zM203 255c-7 17-9 34-6 52h48v-52h-42zM275 255v52h48c3-18 1-35-6-52h-42zM196 329c-2 18 0 34 6 49 13 6 27 9 43 10v-59h-49zM275 329v59c16-1 30-4 43-10 6-15 8-31 6-49h-49z"/>
-        <path style={muscleStyle('quads')} d="M164 394c24 14 43 44 56 91l-20 139c-4 24-18 39-41 42-14-13-19-31-15-55l27-212-7-5zM356 394l-7 5 27 212c4 24-1 42-15 55-23-3-37-18-41-42l-20-139c13-47 32-77 56-91z"/>
-        <path style={muscleStyle('calves-front')} d="M163 527c23 18 34 50 33 96l-9 37c-6 18-19 27-38 26-11-12-15-28-12-49l26-110zM357 527l26 110c3 21-1 37-12 49-19 1-32-8-38-26l-9-37c-1-46 10-78 33-96z"/>
+        {/* ── Body silhouette ── */}
+        {/* Head */}
+        <ellipse cx="0" cy="18" rx="11" ry="13" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Neck */}
+        <rect x="-4" y="28" width="8" height="8" rx="2" fill={bodyFill}/>
+        {/* Torso */}
+        <path d="M-22 36 C-26 36 -30 40 -30 50 L-28 110 C-28 118 -22 124 -14 124 L14 124 C22 124 28 118 28 110 L30 50 C30 40 26 36 22 36 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left upper arm */}
+        <path d="M-30 42 C-38 42 -42 48 -41 58 L-38 85 C-37 92 -32 96 -27 94 L-26 68 C-26 55 -28 46 -30 42 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right upper arm */}
+        <path d="M30 42 C38 42 42 48 41 58 L38 85 C37 92 32 96 27 94 L26 68 C26 55 28 46 30 42 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left forearm */}
+        <path d="M-27 94 C-32 95 -35 100 -34 108 L-31 128 C-30 134 -26 137 -22 136 L-20 112 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right forearm */}
+        <path d="M27 94 C32 95 35 100 34 108 L31 128 C30 134 26 137 22 136 L20 112 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left hand */}
+        <ellipse cx="-26" cy="139" rx="5" ry="7" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right hand */}
+        <ellipse cx="26" cy="139" rx="5" ry="7" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Hips */}
+        <path d="M-18 120 C-28 122 -32 130 -30 140 L-26 152 L26 152 L30 140 C32 130 28 122 18 120 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left thigh */}
+        <path d="M-26 148 C-32 150 -34 158 -32 170 L-28 200 C-26 208 -20 212 -14 210 L-12 178 C-12 164 -16 152 -26 148 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right thigh */}
+        <path d="M26 148 C32 150 34 158 32 170 L28 200 C26 208 20 212 14 210 L12 178 C12 164 16 152 26 148 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left shin */}
+        <path d="M-14 210 C-20 212 -22 220 -20 232 L-17 256 C-16 262 -11 265 -7 263 L-6 238 C-6 224 -9 213 -14 210 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right shin */}
+        <path d="M14 210 C20 212 22 220 20 232 L17 256 C16 262 11 265 7 263 L6 238 C6 224 9 213 14 210 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left foot */}
+        <ellipse cx="-12" cy="267" rx="7" ry="4" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right foot */}
+        <ellipse cx="12" cy="267" rx="7" ry="4" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+
+        {/* ── Front muscles ── */}
+        {/* Chest left */}
+        <path id="chest-l" d="M-22 44 C-18 40 -10 39 -2 41 C-1 52 -4 62 -12 68 C-20 64 -25 56 -22 44 Z" fill={c('chest-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Chest right */}
+        <path id="chest-r" d="M22 44 C18 40 10 39 2 41 C1 52 4 62 12 68 C20 64 25 56 22 44 Z" fill={c('chest-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Front delt left */}
+        <ellipse id="fdelt-l" cx="-28" cy="44" rx="6" ry="8" fill={c('fdelt-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Front delt right */}
+        <ellipse id="fdelt-r" cx="28" cy="44" rx="6" ry="8" fill={c('fdelt-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Side delt left */}
+        <ellipse id="sdelt-l" cx="-34" cy="50" rx="5" ry="7" fill={c('sdelt-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Side delt right */}
+        <ellipse id="sdelt-r" cx="34" cy="50" rx="5" ry="7" fill={c('sdelt-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Bicep left */}
+        <ellipse id="bicep-l" cx="-35" cy="68" rx="5" ry="10" fill={c('bicep-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Bicep right */}
+        <ellipse id="bicep-r" cx="35" cy="68" rx="5" ry="10" fill={c('bicep-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Abs */}
+        <g id="abs">
+          <rect x="-10" y="72" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+          <rect x="2" y="72" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+          <rect x="-10" y="83" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+          <rect x="2" y="83" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+          <rect x="-10" y="94" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+          <rect x="2" y="94" width="8" height="9" rx="2" fill={c('abs')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        </g>
+        {/* Quad left */}
+        <path id="quad-l" d="M-24 152 C-30 155 -32 164 -30 176 L-26 200 C-22 208 -16 210 -12 208 C-10 194 -11 174 -16 156 Z" fill={c('quad-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Quad right */}
+        <path id="quad-r" d="M24 152 C30 155 32 164 30 176 L26 200 C22 208 16 210 12 208 C10 194 11 174 16 156 Z" fill={c('quad-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Calf front left */}
+        <ellipse id="calf-fl" cx="-13" cy="238" rx="5" ry="12" fill={c('calf-fl')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Calf front right */}
+        <ellipse id="calf-fr" cx="13" cy="238" rx="5" ry="12" fill={c('calf-fr')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+
       </g>
 
-      {/* ── BACK VIEW ── */}
-      <g transform="translate(470 28)">
-        <path className="body-fill" d="M210 18c-27 0-49 22-49 49s22 49 49 49 49-22 49-49-22-49-49-49zM151 128c-34 10-59 38-70 86L55 334c-5 24 10 48 34 53 23 5 45-9 52-31l18-63 4 83-33 231c-5 35 18 67 53 72 29 4 57-14 65-43l35-159h19l35 159c8 29 36 47 65 43 35-5 58-37 53-72l-33-231 4-83 18 63c7 22 29 36 52 31 24-5 39-29 34-53l-26-120c-11-48-36-76-70-86-31-9-68-12-109-12H260c-41 0-78 3-109 12z"/>
-        <path style={muscleStyle('lats')} d="M133 197c35 19 59 54 72 106l-22 87c-27-24-46-60-56-108-3-34-1-63 6-85zM387 197c7 22 9 51 6 85-10 48-29 84-56 108l-22-87c13-52 37-87 72-106z"/>
-        <path style={muscleStyle('upper-back')} d="M153 143c31 9 67 13 107 13s76-4 107-13c3 38-12 72-45 102-20 18-41 32-62 42-21-10-42-24-62-42-33-30-48-64-45-102z"/>
-        <path style={muscleStyle('rear-delts')} d="M101 178c12-22 31-38 56-46 13 2 23 8 30 18-18 16-34 37-47 63-17-3-30-15-39-35zM333 150c7-10 17-16 30-18 25 8 44 24 56 46-9 20-22 32-39 35-13-26-29-47-47-63z"/>
-        <path style={muscleStyle('triceps')} d="M84 255c20 4 35 18 45 43l-17 65c-6 16-18 26-35 27-12-11-16-27-12-46l19-89zM436 255l19 89c4 19 0 35-12 46-17-1-29-11-35-27l-17-65c10-25 25-39 45-43z"/>
-        <path style={muscleStyle('glutes')} d="M163 377c29-14 62-12 97 7 2 36-16 66-54 90-32-11-48-43-43-97zM260 384c35-19 68-21 97-7 5 54-11 86-43 97-38-24-56-54-54-90z"/>
-        <path style={muscleStyle('hamstrings')} d="M164 456c25 19 43 55 54 108l-18 60c-5 24-19 39-41 42-14-13-19-31-15-55l27-150-7-5zM356 456l-7 5 27 150c4 24-1 42-15 55-22-3-36-18-41-42l-18-60c11-53 29-89 54-108z"/>
-        <path style={muscleStyle('calves-back')} d="M163 527c23 18 34 50 33 96l-9 37c-6 18-19 27-38 26-11-12-15-28-12-49l26-110zM357 527l26 110c3 21-1 37-12 49-19 1-32-8-38-26l-9-37c-1-46 10-78 33-96z"/>
+      {/* ═══════════════════════════════
+          BACK FIGURE  (right side)
+          Centre x = 165
+      ═══════════════════════════════ */}
+      <g transform="translate(165 0)">
+
+        {/* ── Body silhouette ── */}
+        {/* Head */}
+        <ellipse cx="0" cy="18" rx="11" ry="13" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Neck */}
+        <rect x="-4" y="28" width="8" height="8" rx="2" fill={bodyFill}/>
+        {/* Torso */}
+        <path d="M-22 36 C-26 36 -30 40 -30 50 L-28 110 C-28 118 -22 124 -14 124 L14 124 C22 124 28 118 28 110 L30 50 C30 40 26 36 22 36 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left upper arm */}
+        <path d="M-30 42 C-38 42 -42 48 -41 58 L-38 85 C-37 92 -32 96 -27 94 L-26 68 C-26 55 -28 46 -30 42 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right upper arm */}
+        <path d="M30 42 C38 42 42 48 41 58 L38 85 C37 92 32 96 27 94 L26 68 C26 55 28 46 30 42 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left forearm */}
+        <path d="M-27 94 C-32 95 -35 100 -34 108 L-31 128 C-30 134 -26 137 -22 136 L-20 112 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right forearm */}
+        <path d="M27 94 C32 95 35 100 34 108 L31 128 C30 134 26 137 22 136 L20 112 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left hand */}
+        <ellipse cx="-26" cy="139" rx="5" ry="7" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right hand */}
+        <ellipse cx="26" cy="139" rx="5" ry="7" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Hips */}
+        <path d="M-18 120 C-28 122 -32 130 -30 140 L-26 152 L26 152 L30 140 C32 130 28 122 18 120 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left thigh */}
+        <path d="M-26 148 C-32 150 -34 158 -32 170 L-28 200 C-26 208 -20 212 -14 210 L-12 178 C-12 164 -16 152 -26 148 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right thigh */}
+        <path d="M26 148 C32 150 34 158 32 170 L28 200 C26 208 20 212 14 210 L12 178 C12 164 16 152 26 148 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left shin */}
+        <path d="M-14 210 C-20 212 -22 220 -20 232 L-17 256 C-16 262 -11 265 -7 263 L-6 238 C-6 224 -9 213 -14 210 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right shin */}
+        <path d="M14 210 C20 212 22 220 20 232 L17 256 C16 262 11 265 7 263 L6 238 C6 224 9 213 14 210 Z" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Left foot */}
+        <ellipse cx="-12" cy="267" rx="7" ry="4" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+        {/* Right foot */}
+        <ellipse cx="12" cy="267" rx="7" ry="4" fill={bodyFill} stroke={bodyStroke} strokeWidth="0.8"/>
+
+        {/* ── Back muscles ── */}
+        {/* Upper back / traps */}
+        <path id="upperback" d="M-18 38 C-10 36 10 36 18 38 C16 58 8 70 0 76 C-8 70 -16 58 -18 38 Z" fill={c('upperback')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Lat left */}
+        <path id="lat-l" d="M-28 52 C-26 48 -22 46 -18 48 C-16 62 -16 76 -20 88 C-26 84 -30 74 -28 52 Z" fill={c('lat-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Lat right */}
+        <path id="lat-r" d="M28 52 C26 48 22 46 18 48 C16 62 16 76 20 88 C26 84 30 74 28 52 Z" fill={c('lat-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Rear delt left */}
+        <ellipse id="rdelt-l" cx="-28" cy="44" rx="6" ry="8" fill={c('rdelt-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Rear delt right */}
+        <ellipse id="rdelt-r" cx="28" cy="44" rx="6" ry="8" fill={c('rdelt-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Tricep left */}
+        <ellipse id="tri-l" cx="-35" cy="68" rx="5" ry="10" fill={c('tri-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Tricep right */}
+        <ellipse id="tri-r" cx="35" cy="68" rx="5" ry="10" fill={c('tri-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Glute left */}
+        <path id="glute-l" d="M-18 124 C-26 126 -30 134 -28 144 L-14 152 C-10 144 -10 134 -18 124 Z" fill={c('glute-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Glute right */}
+        <path id="glute-r" d="M18 124 C26 126 30 134 28 144 L14 152 C10 144 10 134 18 124 Z" fill={c('glute-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Hamstring left */}
+        <path id="ham-l" d="M-24 152 C-30 155 -32 164 -30 176 L-26 200 C-22 208 -16 210 -12 208 C-10 194 -11 174 -16 156 Z" fill={c('ham-l')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Hamstring right */}
+        <path id="ham-r" d="M24 152 C30 155 32 164 30 176 L26 200 C22 208 16 210 12 208 C10 194 11 174 16 156 Z" fill={c('ham-r')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Calf back left */}
+        <ellipse id="calf-bl" cx="-13" cy="238" rx="5" ry="12" fill={c('calf-bl')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+        {/* Calf back right */}
+        <ellipse id="calf-br" cx="13" cy="238" rx="5" ry="12" fill={c('calf-br')} stroke="#1a1a1a" strokeWidth={muscleSW}/>
+
       </g>
+
     </svg>
   );
 }
