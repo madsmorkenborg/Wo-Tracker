@@ -1109,85 +1109,69 @@ function MuscleHeatmap({ program, customExercises, customDetailedMuscles }) {
     if (muscle) trained.add(muscle);
   });
 
-  const active = (muscle) => trained.has(muscle) ? '#e94560' : 'rgba(128,128,128,0.25)';
-  const stroke = 'rgba(128,128,128,0.5)';
-  const sw = '1';
+  const MUSCLE_TO_SVG = {
+    'Chest (Overall)': ['chest'],
+    'Front Delts':     ['front-delts'],
+    'Side Delts':      ['side-delts'],
+    'Biceps':          ['biceps'],
+    'Abs':             ['abs'],
+    'Quads':           ['quads'],
+    'Calves':          ['calves-front', 'calves-back'],
+    'Lats':            ['lats'],
+    'Upper Back':      ['upper-back'],
+    'Rear Delts':      ['rear-delts'],
+    'Triceps':         ['triceps'],
+    'Glutes':          ['glutes'],
+    'Hamstrings':      ['hamstrings'],
+  };
+
+  const activeSvgIds = new Set();
+  trained.forEach(muscle => {
+    const ids = MUSCLE_TO_SVG[muscle];
+    if (ids) ids.forEach(id => activeSvgIds.add(id));
+  });
+
+  const muscleStyle = (id) => ({
+    fill: activeSvgIds.has(id) ? '#e94560' : '#444444',
+    stroke: '#2b2b2b',
+    strokeWidth: 2,
+    strokeLinejoin: 'round',
+    transition: 'fill 0.3s ease',
+  });
 
   return (
-    <svg viewBox="0 0 120 85" style={{ width: '130px', height: '90px', flexShrink: 0 }}>
-      {/* ── FRONT BODY ── */}
-      {/* Head */}
-      <ellipse cx="22" cy="6" rx="5" ry="6" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Neck */}
-      <rect x="20" y="11" width="4" height="4" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Chest */}
-      <rect x="14" y="15" width="16" height="10" rx="2" fill={active('Chest (Overall)')} stroke={stroke} strokeWidth={sw} />
-      {/* Front Delts left */}
-      <rect x="9" y="15" width="5" height="7" rx="1" fill={active('Front Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Front Delts right */}
-      <rect x="30" y="15" width="5" height="7" rx="1" fill={active('Front Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Side Delts left */}
-      <rect x="7" y="15" width="3" height="5" rx="1" fill={active('Side Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Side Delts right */}
-      <rect x="34" y="15" width="3" height="5" rx="1" fill={active('Side Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Biceps left */}
-      <rect x="8" y="23" width="5" height="9" rx="1" fill={active('Biceps')} stroke={stroke} strokeWidth={sw} />
-      {/* Biceps right */}
-      <rect x="31" y="23" width="5" height="9" rx="1" fill={active('Biceps')} stroke={stroke} strokeWidth={sw} />
-      {/* Forearm left */}
-      <rect x="8" y="33" width="4" height="8" rx="1" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Forearm right */}
-      <rect x="32" y="33" width="4" height="8" rx="1" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Abs */}
-      <rect x="17" y="26" width="10" height="14" rx="2" fill={active('Abs')} stroke={stroke} strokeWidth={sw} />
-      {/* Quads left */}
-      <rect x="15" y="42" width="7" height="16" rx="2" fill={active('Quads')} stroke={stroke} strokeWidth={sw} />
-      {/* Quads right */}
-      <rect x="23" y="42" width="7" height="16" rx="2" fill={active('Quads')} stroke={stroke} strokeWidth={sw} />
-      {/* Calves left front */}
-      <rect x="15" y="60" width="6" height="12" rx="2" fill={active('Calves')} stroke={stroke} strokeWidth={sw} />
-      {/* Calves right front */}
-      <rect x="23" y="60" width="6" height="12" rx="2" fill={active('Calves')} stroke={stroke} strokeWidth={sw} />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 900 720"
+      style={{ width: '160px', height: '128px', flexShrink: 0, background: 'transparent' }}
+    >
+      <defs>
+        <style>{`.body-fill{fill:#1f1f1f}`}</style>
+      </defs>
 
-      {/* ── BACK BODY ── */}
-      {/* Head */}
-      <ellipse cx="98" cy="6" rx="5" ry="6" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Neck */}
-      <rect x="96" y="11" width="4" height="4" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Upper Back */}
-      <rect x="90" y="15" width="16" height="10" rx="2" fill={active('Upper Back')} stroke={stroke} strokeWidth={sw} />
-      {/* Rear Delts left */}
-      <rect x="85" y="15" width="5" height="7" rx="1" fill={active('Rear Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Rear Delts right */}
-      <rect x="106" y="15" width="5" height="7" rx="1" fill={active('Rear Delts')} stroke={stroke} strokeWidth={sw} />
-      {/* Lats left */}
-      <rect x="86" y="23" width="6" height="10" rx="1" fill={active('Lats')} stroke={stroke} strokeWidth={sw} />
-      {/* Lats right */}
-      <rect x="104" y="23" width="6" height="10" rx="1" fill={active('Lats')} stroke={stroke} strokeWidth={sw} />
-      {/* Triceps left */}
-      <rect x="83" y="23" width="4" height="9" rx="1" fill={active('Triceps')} stroke={stroke} strokeWidth={sw} />
-      {/* Triceps right */}
-      <rect x="109" y="23" width="4" height="9" rx="1" fill={active('Triceps')} stroke={stroke} strokeWidth={sw} />
-      {/* Forearm left back */}
-      <rect x="83" y="33" width="4" height="8" rx="1" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Forearm right back */}
-      <rect x="109" y="33" width="4" height="8" rx="1" fill="rgba(128,128,128,0.25)" stroke={stroke} strokeWidth={sw} />
-      {/* Glutes */}
-      <rect x="90" y="26" width="16" height="10" rx="2" fill={active('Glutes')} stroke={stroke} strokeWidth={sw} />
-      {/* Hamstrings left */}
-      <rect x="90" y="38" width="7" height="16" rx="2" fill={active('Hamstrings')} stroke={stroke} strokeWidth={sw} />
-      {/* Hamstrings right */}
-      <rect x="99" y="38" width="7" height="16" rx="2" fill={active('Hamstrings')} stroke={stroke} strokeWidth={sw} />
-      {/* Calves left back */}
-      <rect x="90" y="56" width="6" height="16" rx="2" fill={active('Calves')} stroke={stroke} strokeWidth={sw} />
-      {/* Calves right back */}
-      <rect x="98" y="56" width="6" height="16" rx="2" fill={active('Calves')} stroke={stroke} strokeWidth={sw} />
+      {/* ── FRONT VIEW ── */}
+      <g transform="translate(80 30)">
+        <path className="body-fill" d="M190 42c-26 0-47 21-47 47s21 47 47 47 47-21 47-47-21-47-47-47zm-64 105c-24 16-42 47-47 91l-15 120c-3 22 12 42 34 45 20 3 38-10 44-29l16-78 5 92-32 214c-4 27 14 52 41 56 25 4 49-12 55-37l37-174h14l37 174c6 25 30 41 55 37 27-4 45-29 41-56l-32-214 5-92 16 78c6 19 24 32 44 29 22-3 37-23 34-45l-15-120c-5-44-23-75-47-91-34-23-84-25-118-25h-56c-34 0-84 2-118 25z"/>
+        <path id="chest" style={muscleStyle('chest')} d="M147 178c26-18 59-20 83-6 0 35-16 64-40 78-28-14-43-40-43-72zm86-6c24-14 57-12 83 6 0 32-15 58-43 72-24-14-40-43-40-78z"/>
+        <path id="front-delts" style={muscleStyle('front-delts')} d="M111 183c19-22 41-28 59-24-19 19-29 44-31 72-21-8-33-25-28-48zm239 0c-19-22-41-28-59-24 19 19 29 44 31 72 21-8 33-25 28-48z"/>
+        <path id="side-delts" style={muscleStyle('side-delts')} d="M93 222c5-25 15-43 29-56 11 25 10 53 2 84-16-3-27-13-31-28zm275 0c-5-25-15-43-29-56-11 25-10 53-2 84 16-3 27-13 31-28z"/>
+        <path id="biceps" style={muscleStyle('biceps')} d="M92 258c18 4 29 16 31 35l-16 76c-12 2-24-5-28-18l13-93zm276 0c-18 4-29 16-31 35l16 76c12 2 24-5 28-18l-13-93z"/>
+        <path id="abs" style={muscleStyle('abs')} d="M184 260h92c9 28 11 72 2 120h-96c-9-48-7-92 2-120zm10 17v37h28v-37h-28zm44 0v37h28v-37h-28zm-45 54v38h29v-38h-29zm45 0v38h29v-38h-29z"/>
+        <path id="quads" style={muscleStyle('quads')} d="M164 404c24 18 43 58 47 117l-24 100c-20-2-33-17-30-37l28-178-21-2zm132 0c-24 18-43 58-47 117l24 100c20-2 33-17 30-37l-28-178 21-2z"/>
+        <path id="calves-front" style={muscleStyle('calves-front')} d="M178 518c21 11 33 38 28 81l-10 42c-17 2-32-9-35-26l17-97zm104 0c-21 11-33 38-28 81l10 42c17 2 32-9 35-26l-17-97z"/>
+      </g>
 
-      {/* Divider line between front and back */}
-      <line x1="60" y1="0" x2="60" y2="80" stroke="rgba(128,128,128,0.2)" strokeWidth="1" strokeDasharray="3,3" />
-      {/* Labels */}
-      <text x="22" y="83" textAnchor="middle" fontSize="7" fontWeight="700" fill="rgba(128,128,128,0.9)">FRONT</text>
-      <text x="98" y="83" textAnchor="middle" fontSize="7" fontWeight="700" fill="rgba(128,128,128,0.9)">BACK</text>
+      {/* ── BACK VIEW ── */}
+      <g transform="translate(460 30)">
+        <path className="body-fill" d="M190 42c-26 0-47 21-47 47s21 47 47 47 47-21 47-47-21-47-47-47zm-64 105c-24 16-42 47-47 91l-15 120c-3 22 12 42 34 45 20 3 38-10 44-29l16-78 5 92-32 214c-4 27 14 52 41 56 25 4 49-12 55-37l37-174h14l37 174c6 25 30 41 55 37 27-4 45-29 41-56l-32-214 5-92 16 78c6 19 24 32 44 29 22-3 37-23 34-45l-15-120c-5-44-23-75-47-91-34-23-84-25-118-25h-56c-34 0-84 2-118 25z"/>
+        <path id="lats" style={muscleStyle('lats')} d="M136 210c26 10 45 36 56 80l-18 91c-27-35-45-83-38-171zm188 0c-26 10-45 36-56 80l18 91c27-35 45-83 38-171z"/>
+        <path id="upper-back" style={muscleStyle('upper-back')} d="M163 158c20 6 43 9 67 9s47-3 67-9c-5 45-25 82-67 115-42-33-62-70-67-115z"/>
+        <path id="rear-delts" style={muscleStyle('rear-delts')} d="M110 181c21-21 43-27 61-22-8 28-23 50-45 65-14-8-20-23-16-43zm240 0c-21-21-43-27-61-22 8 28 23 50 45 65 14-8 20-23 16-43z"/>
+        <path id="triceps" style={muscleStyle('triceps')} d="M91 250c20 5 31 20 32 43l-16 76c-13 2-24-6-28-19l12-100zm278 0c-20 5-31 20-32 43l16 76c13 2 24-6 28-19l-12-100z"/>
+        <path id="glutes" style={muscleStyle('glutes')} d="M176 384c27-13 51-12 70 5-2 37-19 62-54 75-24-13-31-42-16-80zm108 0c-27-13-51-12-70 5 2 37 19 62 54 75 24-13 31-42 16-80z"/>
+        <path id="hamstrings" style={muscleStyle('hamstrings')} d="M161 457c27 20 43 58 46 105l-20 59c-20-3-33-18-30-38l27-126h-23zm138 0c-27 20-43 58-46 105l20 59c20-3 33-18 30-38l-27-126h23z"/>
+        <path id="calves-back" style={muscleStyle('calves-back')} d="M178 518c22 13 33 42 28 83l-10 40c-17 2-32-9-35-26l17-97zm104 0c-22 13-33 42-28 83l10 40c17 2 32-9 35-26l-17-97z"/>
+      </g>
     </svg>
   );
 }
