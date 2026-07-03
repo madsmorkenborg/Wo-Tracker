@@ -1800,8 +1800,16 @@ useEffect(() => {
       // Silently ignore — this is just a keep-alive ping
     }
   };
+
+  // Ping immediately on mount
   pingSupabase();
-}, []); // Empty dependency array = runs once on mount
+
+  // Then ping every 4 days to keep Supabase project active
+  const interval = setInterval(pingSupabase, 4 * 24 * 60 * 60 * 1000);
+
+  // Cleanup on unmount
+  return () => clearInterval(interval);
+}, []); // Empty dependency array = runs once on mount, interval handles the rest
 
   const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
